@@ -29,6 +29,17 @@ def find_user_info(html_source):
         print(f"Error: {e}")
         return None
 
+def get_uid_from_api(username):
+    api_url = f"https://fbuid.mktsoftware.net/api/v1/fbprofile?url=https://facebook.com/{username}"
+    try:
+        response = requests.get(api_url)
+        response.raise_for_status()
+        uid = response.json().get('uid')
+        return uid
+    except requests.exceptions.RequestException as e:
+        print(f"Error: {e}")
+        return None
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
@@ -42,7 +53,19 @@ def index():
                 uid = user_info.get('userID')
                 return jsonify({'uid': uid})
             else:
-                return jsonify({'error': 'User information not found.'}), 404
+                # If parsing HTML fails, fallback to using the API
+                uid_api = get_uid_from_api(username)
+                if uid_api:
+                    return jsonify({'uid': uid_api})
+                else:
+                    return jsonify({'error': 'User information not found.'}), 404
+
+        # If fetching HTML source fails, fallback to using the API
+        uid_api = get_uid_from_api(username)
+        if uid_api:
+            return jsonify({'uid': uid_api})
+        else:
+            return jsonify({'error': 'Failed to get UID from API.'}), 404
 
     return render_template('index.html', uid=None)
 
