@@ -1,6 +1,17 @@
 {
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/app.py" }
-  ],
-  "cleanUrls": true
+  "functions": {
+    "api/*": {
+      "runtime": "python3.10",
+      "handler": "app.handler"
+    }
+  },
+  "install": {
+    "include": ["requirements.txt"]
+  },
+  "builds": [
+    {
+      "src": "templates/**",
+      "use": "@vercel/static-build"
+    }
+  ]
 }
