@@ -53,19 +53,19 @@ def index():
                 uid = user_info.get('userID')
                 return jsonify({'uid': uid})
             else:
-                # If parsing HTML fails, fallback to using the API
+                # If parsing HTML fails, try using the API
                 uid_api = get_uid_from_api(username)
                 if uid_api:
                     return jsonify({'uid': uid_api})
                 else:
                     return jsonify({'error': 'User information not found.'}), 404
 
-        # If fetching HTML source fails, fallback to using the API
+        # If fetching HTML source fails, try using the API
         uid_api = get_uid_from_api(username)
         if uid_api:
             return jsonify({'uid': uid_api})
         else:
-            return jsonify({'error': 'Failed to get UID from API.'}), 404
+            return jsonify({'error': 'Failed to get UID from API or HTML source.'}), 404
 
     return render_template('index.html', uid=None)
 
