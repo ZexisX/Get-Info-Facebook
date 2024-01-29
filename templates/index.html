@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get UID</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+
+</head>
+<body class="bg-gray-100 h-screen flex items-center justify-center">
+    <div class="max-w-md w-full bg-white p-6 rounded-md shadow-md">
+        <h1 class="text-2xl font-bold mb-4">Get UID</h1>
+        <form id="getUidForm" method="post" class="space-y-4">
+            <div class="flex flex-col">
+                <label for="username" class="text-sm font-medium">Username or ID:</label>
+                <input type="text" id="username" name="username" required class="mt-1 p-2 border rounded-md focus:outline-none focus:border-blue-500">
+            </div>
+            <button type="submit" class="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300">Get UID</button>
+        </form>
+
+        <div id="result" class="mt-4">
+            {% if uid %}
+                <div id="userDetails" class="mt-4"></div>
+            {% endif %}
+        </div>
+
+        <script>
+            document.getElementById('getUidForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                var input = document.getElementById('username').value;
+                var isNumber = /^\d+$/.test(input);
+
+                if (isNumber) {
+                    getUserDetails(input);
+                } else {
+                    fetch('/', {
+                        method: 'POST',
+                        body: new URLSearchParams({ 'username': input }),
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.uid) {
+                            getUserDetails(data.uid);
+                        } else {
+                            document.getElementById('result').innerHTML = '<p class="text-red-500">User information not found.</p>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        document.getElementById('result').innerHTML = '<p class="text-red-500">Failed to fetch UID.</p>';
+                    });
+                }
+            });
+
+            function getUserDetails(userId) {
+                fetch(`/user-details/${userId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            console.error('Error:', data.error);
+                            document.getElementById('userDetails').innerHTML = '<p class="text-red-500">Failed to fetch user details.</p>';
+                        } else {
+                            document.getElementById('result').innerHTML = `
+                                <p>UID: ${data.id}</p>
+                                <p>Followers: ${data.followers}</p>
+                                <p>Locale: ${data.locale}</p>
+                                <p>Created Time: ${data.created_time}</p>
+                                <p>Name: ${data.name}</p>
+                            `;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        document.getElementById('result').innerHTML = '<p class="text-red-500">Failed to fetch user details.</p>';
+                    });
+            }
+        </script>
+    </div>
+</body>
+</html>
