@@ -5,18 +5,5 @@
       "destination": "/app.py"
     }
   ],
-  "routes": [
-    {
-      "src": "/static/(.*)",
-      "dest": "/static/$1"
-    },
-    {
-      "src": "/user-details/(.*)",
-      "dest": "/app.py"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/app.py"
-    }
-  ]
+  "cleanUrls": true
 }
