@@ -1,20 +1,22 @@
 {
-  "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "app.py",
-      "use": "@vercel/python"
+      "source": "/(.*)",
+      "destination": "/app.py"
     }
   ],
   "routes": [
     {
+      "src": "/static/(.*)",
+      "dest": "/static/$1"
+    },
+    {
+      "src": "/user-details/(.*)",
+      "dest": "/app.py"
+    },
+    {
       "src": "/(.*)",
       "dest": "/app.py"
     }
-  ],
-  "env": {
-    "FLASK_ENV": "production",
-    "FLASK_APP": "app.py",
-    "PYTHON_VERSION": "3.10.0"
-  }
+  ]
 }
