@@ -29,6 +29,7 @@
             color: white;
             border-radius: 5px;
             z-index: 1000;
+            cursor: pointer; /* Add cursor style for the clickable error popup */
         }
     </style>
 </head>
@@ -95,8 +96,7 @@
                     })
                     .finally(() => {
                         // Enable button and reset text
-                        getUidButton.disabled = false;
-                        getUidButton.innerText = 'Get UID';
+                        resetButtonState();
                     });
                 }
             });
@@ -131,6 +131,17 @@
                     popup.style.display = 'none';
                 }, 3000); // Hide after 3 seconds
             }
+
+            function resetButtonState() {
+                var getUidButton = document.getElementById('getUidButton');
+                getUidButton.disabled = false;
+                getUidButton.innerText = 'Get UID';
+            }
+
+            // Add event listener for the error popup to reset the button state
+            document.getElementById('error-popup').addEventListener('click', function() {
+                resetButtonState();
+            });
         </script>
     </div>
 </body>
