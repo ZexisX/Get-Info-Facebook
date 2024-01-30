@@ -87,15 +87,15 @@
                         } else {
                             // Show error popup
                             showPopup('error-popup');
-                            // Reset button state in case of an error
-                            resetButtonState();
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
                         // Show error popup
                         showPopup('error-popup');
-                        // Reset button state in case of an error
+                    })
+                    .finally(() => {
+                        // Enable button and reset text
                         resetButtonState();
                     });
                 }
@@ -129,6 +129,8 @@
                 popup.style.display = 'block';
                 setTimeout(function() {
                     popup.style.display = 'none';
+                    // Reset button state after hiding the popup
+                    resetButtonState();
                 }, 3000); // Hide after 3 seconds
             }
 
