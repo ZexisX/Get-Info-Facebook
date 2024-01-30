@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 import requests
+import re
 import json
 import os
 from datetime import datetime
@@ -11,8 +12,15 @@ def get_user_id(username):
         "Cookie": "sb=vZKuZUvhBAjDFehqIdRke6M_;datr=vZKuZYB6tAvMoBBbMIOaw3PH;locale=vi_VN;c_user=100000519583426;ps_n=0;ps_l=0;dpr=1.3333333730697632;i_user=61555552843696;xs=24%3ANZMOlc-RoWfPJw%3A2%3A1706022493%3A-1%3A10645%3A%3AAcUxQzkp1NS5lgh4Hz8Q3Dy2F9Zl7gv0FXBxfHFeFaQ;fr=1K9OstgLKbtvL5NKU.AWWln3qhWfAh60mZ7qG7lQ2KUFw.BluMo8.Yh.AAA.0.0.BluMo8.AWUzpU_dtek;presence=EDvF3EtimeF1706609220EuserFA21B00519583426A2EstateFDutF0CEchF_7bCC;wd=1429x721;"
     }
     get = requests.get(f"https://www.facebook.com/{username}", headers=hd).text
-    id_acc = get.split('"userID":"')[1].split('"')[0]
-    return id_acc
+    
+    # Regex để tìm kiếm ID người dùng trong URL
+    match = re.search(r'(profile\.php\?id=\d+|\d+)', get)
+    
+    if match:
+        user_id = match.group(1)
+        return user_id
+    else:
+        raise ValueError("User ID not found in the URL")
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
