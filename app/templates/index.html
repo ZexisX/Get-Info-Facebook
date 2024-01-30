@@ -87,15 +87,15 @@
                         } else {
                             // Show error popup
                             showPopup('error-popup');
+                            // Reset button state in case of an error
+                            resetButtonState();
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
                         // Show error popup
                         showPopup('error-popup');
-                    })
-                    .finally(() => {
-                        // Enable button and reset text
+                        // Reset button state in case of an error
                         resetButtonState();
                     });
                 }
