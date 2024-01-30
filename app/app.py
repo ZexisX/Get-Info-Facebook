@@ -1,10 +1,8 @@
 from flask import Flask, render_template, request, jsonify
 import requests
-import re
 import json
 import os
 from datetime import datetime
-from urllib.parse import urlparse
 
 app = Flask(__name__)
 
@@ -13,22 +11,8 @@ def get_user_id(username):
         "Cookie": "sb=vZKuZUvhBAjDFehqIdRke6M_;datr=vZKuZYB6tAvMoBBbMIOaw3PH;locale=vi_VN;c_user=100000519583426;ps_n=0;ps_l=0;dpr=1.3333333730697632;i_user=61555552843696;xs=24%3ANZMOlc-RoWfPJw%3A2%3A1706022493%3A-1%3A10645%3A%3AAcUxQzkp1NS5lgh4Hz8Q3Dy2F9Zl7gv0FXBxfHFeFaQ;fr=1K9OstgLKbtvL5NKU.AWWln3qhWfAh60mZ7qG7lQ2KUFw.BluMo8.Yh.AAA.0.0.BluMo8.AWUzpU_dtek;presence=EDvF3EtimeF1706609220EuserFA21B00519583426A2EstateFDutF0CEchF_7bCC;wd=1429x721;"
     }
     get = requests.get(f"https://www.facebook.com/{username}", headers=hd).text
-    
-    # Regex để tìm kiếm ID người dùng trong URL
-    match = re.search(r'(profile\.php\?id=\d+|\d+)', get)
-    
-    if match:
-        user_id = match.group(1)
-        return user_id
-    else:
-        raise ValueError("User ID not found in the URL")
-
-def convert_utc_to_local(utc_time_str, timezone):
-    utc_time = datetime.strptime(utc_time_str, '%Y-%m-%dT%H:%M:%S+0000')
-    utc_time = utc_time.replace(tzinfo=pytz.utc)
-    
-    local_time = utc_time.astimezone(pytz.timezone(timezone))
-    return local_time.strftime('%H:%M:%S %d/%m/%Y')
+    id_acc = get.split('"userID":"')[1].split('"')[0]
+    return id_acc
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -36,7 +20,7 @@ def index():
         username = request.form['username']
         try:
             user_id = get_user_id(username)
-            return jsonify({'uid': user_id, 'redirect_url': f'/user-details/{user_id}'})
+            return jsonify({'uid': user_id})
         except Exception as e:
             print(f"Error: {e}")
             return jsonify({'error': 'User information not found.'}), 404
@@ -52,7 +36,7 @@ def get_user_details(user_id):
         response.raise_for_status()
         user_details = response.json()
 
-        user_details['created_time'] = convert_utc_to_local(user_details['created_time'], 'UTC')
+        user_details['created_time'] = datetime.strptime(user_details['created_time'], '%Y-%m-%dT%H:%M:%S+0000').strftime('%H:%M:%S %d/%m/%Y UTC')
         user_details['followers'] = user_details['subscribers']['summary']['total_count']
         del user_details['subscribers']
 
