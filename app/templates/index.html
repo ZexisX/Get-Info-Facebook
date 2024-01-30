@@ -6,7 +6,6 @@
     <title>Get UID</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
     <style>
-        /* Popup Styles */
         #popup {
             display: none;
             position: fixed;
@@ -29,7 +28,7 @@
             color: white;
             border-radius: 5px;
             z-index: 1000;
-            cursor: pointer; /* Add cursor style for the clickable error popup */
+            cursor: pointer; 
         }
     </style>
 </head>
@@ -63,7 +62,6 @@
                 var input = document.getElementById('username').value;
                 var isNumber = /^\d+$/.test(input);
 
-                // Disable button and show loading text
                 var getUidButton = document.getElementById('getUidButton');
                 getUidButton.disabled = true;
                 getUidButton.innerText = 'Đang Get UID...';
@@ -82,20 +80,16 @@
                     .then(data => {
                         if (data.uid) {
                             getUserDetails(data.uid);
-                            // Show success popup
                             showPopup('popup');
                         } else {
-                            // Show error popup
                             showPopup('error-popup');
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        // Show error popup
                         showPopup('error-popup');
                     })
                     .finally(() => {
-                        // Reset button state after completion
                         resetButtonState();
                     });
                 }
@@ -129,9 +123,8 @@
                 popup.style.display = 'block';
                 setTimeout(function() {
                     popup.style.display = 'none';
-                    // Reset button state after hiding the popup
                     resetButtonState();
-                }, 3000); // Hide after 3 seconds
+                }, 3000); 
             }
 
             function resetButtonState() {
@@ -140,7 +133,6 @@
                 getUidButton.innerText = 'Get UID';
             }
 
-            // Add event listener for the error popup to reset the button state
             document.getElementById('error-popup').addEventListener('click', function() {
                 resetButtonState();
             });
