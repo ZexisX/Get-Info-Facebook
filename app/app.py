@@ -1,48 +1,29 @@
 from flask import Flask, render_template, request, jsonify
 import requests
 import json
-import re
 import os
 from datetime import datetime
 
 app = Flask(__name__)
 
-def get_html_source(url):
-    try:
-        response = requests.get(url)
-        response.raise_for_status()
-        html_source = response.text
-        return html_source
-    except requests.exceptions.RequestException as e:
-        print(f"Error: {e}")
-        return None
-
-def find_user_info(html_source):
-    try:
-        match = re.search(r'"props":\s*({.*?})', html_source)
-        if match:
-            props_json_str = match.group(1)
-            user_info = json.loads(props_json_str)
-            return user_info
-        return None
-    except Exception as e:
-        print(f"Error: {e}")
-        return None
+def get_user_id(username):
+    hd = {
+        "Cookie": "sb=vZKuZUvhBAjDFehqIdRke6M_;datr=vZKuZYB6tAvMoBBbMIOaw3PH;locale=vi_VN;c_user=100000519583426;ps_n=0;ps_l=0;dpr=1.3333333730697632;i_user=61555552843696;xs=24%3ANZMOlc-RoWfPJw%3A2%3A1706022493%3A-1%3A10645%3A%3AAcUxQzkp1NS5lgh4Hz8Q3Dy2F9Zl7gv0FXBxfHFeFaQ;fr=1K9OstgLKbtvL5NKU.AWWln3qhWfAh60mZ7qG7lQ2KUFw.BluMo8.Yh.AAA.0.0.BluMo8.AWUzpU_dtek;presence=EDvF3EtimeF1706609220EuserFA21B00519583426A2EstateFDutF0CEchF_7bCC;wd=1429x721;"
+    }
+    get = requests.get(f"https://www.facebook.com/{username}", headers=hd).text
+    id_acc = get.split('"userID":"')[1].split('"')[0]
+    return id_acc
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
         username = request.form['username']
-        target_url = f"https://www.facebook.com/{username}"
-        html_source = get_html_source(target_url)
-
-        if html_source:
-            user_info = find_user_info(html_source)
-            if user_info:
-                uid = user_info.get('userID')
-                return jsonify({'uid': uid})
-            else:
-                return jsonify({'error': 'User information not found.'}), 404
+        try:
+            user_id = get_user_id(username)
+            return jsonify({'uid': user_id})
+        except Exception as e:
+            print(f"Error: {e}")
+            return jsonify({'error': 'User information not found.'}), 404
 
     return render_template('index.html', uid=None)
 
