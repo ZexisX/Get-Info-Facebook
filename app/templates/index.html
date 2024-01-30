@@ -5,6 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Get UID</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <style>
+        /* Popup Styles */
+        #popup {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 5px;
+            z-index: 1000;
+        }
+
+        #error-popup {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px;
+            background-color: #ff3333;
+            color: white;
+            border-radius: 5px;
+            z-index: 1000;
+        }
+    </style>
 </head>
 <body class="bg-gray-100 h-screen flex items-center justify-center">
     <div class="max-w-md w-full bg-white p-6 rounded-md shadow-md">
@@ -22,6 +48,12 @@
                 <div id="userDetails" class="mt-4"></div>
             {% endif %}
         </div>
+
+        <!-- Success Popup -->
+        <div id="popup">Get UID thành công!</div>
+
+        <!-- Error Popup -->
+        <div id="error-popup">Không tìm thấy thông tin hoặc lỗi khi get UID.</div>
 
         <script>
             document.getElementById('getUidForm').addEventListener('submit', function(event) {
@@ -50,15 +82,16 @@
                         if (data.uid) {
                             getUserDetails(data.uid);
                             // Show success popup
-                            window.alert('Get UID thành công!');
-
+                            showPopup('popup');
                         } else {
-                            document.getElementById('result').innerHTML = '<p class="text-red-500">User information not found.</p>';
+                            // Show error popup
+                            showPopup('error-popup');
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        document.getElementById('result').innerHTML = '<p class="text-red-500">Failed to fetch UID.</p>';
+                        // Show error popup
+                        showPopup('error-popup');
                     })
                     .finally(() => {
                         // Enable button and reset text
@@ -89,6 +122,14 @@
                         console.error('Error:', error);
                         document.getElementById('result').innerHTML = '<p class="text-red-500">Failed to fetch user details.</p>';
                     });
+            }
+
+            function showPopup(id) {
+                var popup = document.getElementById(id);
+                popup.style.display = 'block';
+                setTimeout(function() {
+                    popup.style.display = 'none';
+                }, 3000); // Hide after 3 seconds
             }
         </script>
     </div>
