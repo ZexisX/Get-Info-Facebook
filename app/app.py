@@ -4,6 +4,7 @@ import re
 import json
 import os
 from datetime import datetime
+from urllib.parse import urlparse
 
 app = Flask(__name__)
 
@@ -21,6 +22,13 @@ def get_user_id(username):
         return user_id
     else:
         raise ValueError("User ID not found in the URL")
+
+def convert_utc_to_local(utc_time_str, timezone):
+    utc_time = datetime.strptime(utc_time_str, '%Y-%m-%dT%H:%M:%S+0000')
+    utc_time = utc_time.replace(tzinfo=pytz.utc)
+    
+    local_time = utc_time.astimezone(pytz.timezone(timezone))
+    return local_time.strftime('%H:%M:%S %d/%m/%Y')
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -44,7 +52,7 @@ def get_user_details(user_id):
         response.raise_for_status()
         user_details = response.json()
 
-        user_details['created_time'] = datetime.strptime(user_details['created_time'], '%Y-%m-%dT%H:%M:%S+0000').strftime('%H:%M:%S %d/%m/%Y')
+        user_details['created_time'] = convert_utc_to_local(user_details['created_time'], 'UTC')
         user_details['followers'] = user_details['subscribers']['summary']['total_count']
         del user_details['subscribers']
 
