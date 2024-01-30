@@ -28,7 +28,7 @@ def index():
         username = request.form['username']
         try:
             user_id = get_user_id(username)
-            return jsonify({'uid': user_id})
+            return jsonify({'uid': user_id, 'redirect_url': f'/user-details/{user_id}'})
         except Exception as e:
             print(f"Error: {e}")
             return jsonify({'error': 'User information not found.'}), 404
