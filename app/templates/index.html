@@ -34,12 +34,8 @@
                 if (isNumber) {
                     getUserDetails(input);
                 } else {
-                    fetch('/', {
-                        method: 'POST',
-                        body: new URLSearchParams({ 'username': input }),
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                        },
+                    fetch('/_/' + input, {
+                        method: 'GET',
                     })
                     .then(response => response.json())
                     .then(data => {
