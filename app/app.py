@@ -42,5 +42,9 @@ def get_user_details(user_id):
         print(f"Error: {e}")
         return jsonify({'error': 'Failed to fetch user details.'}), 500
 
+@app.route('/')
+def index():
+    return render_template('index.html')
+
 if __name__ == '__main__':
     app.run(debug=False, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
