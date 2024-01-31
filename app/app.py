@@ -14,18 +14,14 @@ def get_user_id(username):
     id_acc = get.split('"userID":"')[1].split('"')[0]
     return id_acc
 
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    if request.method == 'POST':
-        username = request.form['username']
-        try:
-            user_id = get_user_id(username)
-            return jsonify({'uid': user_id})
-        except Exception as e:
-            print(f"Error: {e}")
-            return jsonify({'error': 'User information not found.'}), 404
-
-    return render_template('index.html', uid=None)
+@app.route('/<username>', methods=['GET'])
+def get_user_json(username):
+    try:
+        user_id = get_user_id(username)
+        return jsonify({'uid': user_id})
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({'error': 'User information not found.'}), 404
 
 @app.route('/user-details/<user_id>', methods=['GET'])
 def get_user_details(user_id):
