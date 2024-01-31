@@ -14,7 +14,7 @@ def get_user_id(username):
     id_acc = get.split('"userID":"')[1].split('"')[0]
     return id_acc
 
-@app.route('/<username>', methods=['GET'])
+@app.route('/_/<username>', methods=['GET'])
 def get_user_json(username):
     try:
         user_id = get_user_id(username)
