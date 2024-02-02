@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 def get_user_id(username):
     hd = {
-        "Cookie": "sb=vZKuZUvhBAjDFehqIdRke6M_;datr=vZKuZYB6tAvMoBBbMIOaw3PH;locale=vi_VN;c_user=100000519583426;ps_n=0;ps_l=0;dpr=1.3333333730697632;i_user=61555552843696;xs=24%3ANZMOlc-RoWfPJw%3A2%3A1706022493%3A-1%3A10645%3A%3AAcUxQzkp1NS5lgh4Hz8Q3Dy2F9Zl7gv0FXBxfHFeFaQ;fr=1K9OstgLKbtvL5NKU.AWWln3qhWfAh60mZ7qG7lQ2KUFw.BluMo8.Yh.AAA.0.0.BluMo8.AWUzpU_dtek;presence=EDvF3EtimeF1706609220EuserFA21B00519583426A2EstateFDutF0CEchF_7bCC;wd=1429x721;"
+        "Cookie": "sb=vZKuZUvhBAjDFehqIdRke6M_;datr=vZKuZYB6tAvMoBBbMIOaw3PH;c_user=100000519583426;ps_n=0;ps_l=0;dpr=1.3333333730697632;xs=24%3ANZMOlc-RoWfPJw%3A2%3A1706022493%3A-1%3A10645%3A%3AAcWL1QoeXmUwjk-bSv0UOx63bttxHKbw4KX7rLWTtAs;i_user=61555552843696;fr=0GEMCQwUeRVKhqRbd.AWUIOrclAZ6HHo1x0YjIthVV7CE.BlvGj7.Yh.AAA.0.0.BlvGkL.AWVIzO2ZoyI;presence=EDvF3EtimeF1706846526EuserFA21B00519583426A2EstateFDutF0CEchF_7bCC;wd=878x721;"
     }
     get = requests.get(f"https://www.facebook.com/{username}", headers=hd).text
     id_acc = get.split('"userID":"')[1].split('"')[0]
@@ -26,7 +26,7 @@ def get_user_json(username):
 @app.route('/user-details/<user_id>', methods=['GET'])
 def get_user_details(user_id):
     try:
-        access_token = "EAAD6V7os0gcBOz9kRngtUYZCiyeU5U3pw4UbaDZBezpaIMwLV8bW26D25BE6PZCNZCjKIIsKGob6HKxnFezirCRdP79oOFkTgZBddzAlZB4osoWIXuqlMS5iOIUgtjxagq4LS4cFTWdXEJhaPHSyuD4sqosEjHtExKRBSm0Bau2qDnZA81WsZAMkQTp15wZDZD"
+        access_token = "EAAD6V7os0gcBO55XAJ2PajkwegUZCCCiRZCBjhKJFmj24wy2zzKEEmqjqFZAluPEtsZAY1N0tpsbMbVn1SfusWoxLDN4ZChVEh0lApbghmZCDs9mI5ObnlrWPpZCXH1S4xoshxOngqqpSQUgWgrStEke92SGE7z5BfBFQW2683AvNjyD9O5LTtiOUES7QZDZD"
         graph_api_url = f"https://graph.facebook.com/{user_id}?fields=id,is_verified,cover,created_time,link,name,locale,gender,first_name,subscribers.limit(0)&access_token={access_token}"
         response = requests.get(graph_api_url)
         response.raise_for_status()
