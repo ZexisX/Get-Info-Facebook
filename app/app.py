@@ -14,9 +14,12 @@ def get_user_id(username):
     id_acc = get.split('"userID":"')[1].split('"')[0]
     return id_acc
 
-@app.route('/_/<username>', methods=['GET'])
+@app.route('/user/<username>', methods=['GET'])
 def get_user_json(username):
     try:
+        if username == "me":
+            return jsonify({'error': 'Unauthorized access.'}), 401
+        
         user_id = get_user_id(username)
         return jsonify({'uid': user_id})
     except Exception as e:
