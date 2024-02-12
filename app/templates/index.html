@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Get UID</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
-
 </head>
 <body class="bg-gray-100 h-screen flex items-center justify-center">
     <div class="max-w-md w-full bg-white p-6 rounded-md shadow-md">
@@ -28,10 +27,12 @@
             document.getElementById('getUidForm').addEventListener('submit', function(event) {
                 event.preventDefault();
 
-                var input = document.getElementById('username').value;
+                var input = document.getElementById('username').value.trim(); // Remove leading and trailing whitespace
                 var isNumber = /^\d+$/.test(input);
 
-                if (isNumber) {
+                if (input.toLowerCase() === 'me') { // Check if input is "me"
+                    document.getElementById('result').innerHTML = '<p class="text-red-500">Invalid input: "me" is not allowed.</p>';
+                } else if (isNumber) {
                     getUserDetails(input);
                 } else {
                     fetch('/_/' + input, {
