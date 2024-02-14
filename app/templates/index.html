@@ -1,142 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
- <meta charset="UTF-8">
- <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <title>Get UID</title>
- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get UID</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
 </head>
+
 <body class="bg-gray-900 h-screen flex items-center justify-center">
- <div class="max-w-md w-full bg-gray-800 p-8 rounded-lg shadow-xl text-gray-300"> 
-    <h1 class="text-3xl font-bold mb-6">Get UID</h1>
+    <div class="max-w-md w-full bg-gray-800 p-8 rounded-lg shadow-xl text-gray-300">
+        <h1 class="text-3xl font-bold mb-6">Get UID</h1>
 
-    <form id="getUidForm" method="post" class="space-y-4">
-       <div class="flex flex-col">
-       <label for="username" class="text-base font-medium">Username or ID:</label>
-       <input type="text" id="username" name="username" required 
-          class="mt-1 p-3 border border-gray-700 rounded-md focus:outline-none focus:ring focus:ring-blue-500 focus:ring-opacity-50 bg-gray-700 text-gray-200"> 
-       </div>
+        <form id="getUidForm" method="post" class="space-y-4">
+            <div class="flex flex-col">
+                <label for="username" class="text-base font-medium">Username or ID:</label>
+                <input type="text" id="username" name="username" required class="mt-1 p-3 border border-gray-700 rounded-md focus:outline-none focus:ring focus:ring-blue-500 focus:ring-opacity-50 bg-gray-700 text-gray-200">
+            </div>
 
-       <button type="submit" class="bg-indigo-500 hover:bg-indigo-600 text-white font-medium py-3 px-6 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400">Get UID</button>
-    </form>
+            <button id="getUidButton" type="submit" class="bg-indigo-500 hover:bg-indigo-600 text-white font-medium py-3 px-6 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400">Get UID</button>
+        </form>
 
-    <div id="result" class="mt-4">
-   {% if uid %}
-    <div id="userDetails" class="mt-4"></div>
-   {% endif %}
-  </div>
-    <footer class="mt-8 text-center text-gray-400 text-sm">
-       &copy; 2024 Le Vinh Khang. All rights reserved.
-    </footer>
- </div>
+        <div id="result" class="mt-4">
+            {% if uid %}
+            <div id="userDetails" class="mt-4"></div>
+            {% endif %}
+        </div>
+        <footer class="mt-8 text-center text-gray-400 text-sm">
+            &copy; 2024 Le Vinh Khang. All rights reserved.
+        </footer>
+    </div>
 
- <script>
+    <script>
+        document.getElementById('getUidForm').addEventListener('submit', function(event) {
+            event.preventDefault();
 
- document.getElementById('getUidForm').addEventListener('submit', function(event) {
+            var input = document.getElementById('username').value.trim();
+            var isNumber = /^\d+$/.test(input);
 
-  event.preventDefault();
+            if (input.toLowerCase() === 'me') {
+                document.getElementById('result').innerHTML = '<p class="text-red-500">Invalid input: "me" is not allowed.</p>';
+            } else if (isNumber) {
+                getUserDetails(input);
+            } else {
+                // Set button to loading state
+                var button = document.getElementById('getUidButton');
+                button.innerHTML = 'Loading...';
+                button.disabled = true;
 
+                fetch('/_/' + input, {
+                        method: 'GET',
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.uid) {
+                            getUserDetails(data.uid);
+                        } else {
+                            document.getElementById('result').innerHTML = '<p class="text-red-500">User information not found.</p>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        document.getElementById('result').innerHTML = '<p class="text-red-500">Failed to fetch UID.</p>';
+                    })
+                    .finally(() => {
+                        // Reset button state
+                        button.innerHTML = 'Get UID';
+                        button.disabled = false;
+                    });
+            }
+        });
 
-
-  var input = document.getElementById('username').value.trim(); 
-
-  var isNumber = /^\d+$/.test(input);
-
-
-
-  if (input.toLowerCase() === 'me') { 
-
-     document.getElementById('result').innerHTML = '<p class="text-red-500">Invalid input: "me" is not allowed.</p>';
-
-    } else if (isNumber) {
-
-     getUserDetails(input);
-
-    } else {
-
-     fetch('/_/' + input, {
-
-      method: 'GET',
-
-     })
-
-     .then(response => response.json())
-
-     .then(data => {
-
-      if (data.uid) {
-
-       getUserDetails(data.uid);
-
-      } else {
-
-       document.getElementById('result').innerHTML = '<p class="text-red-500">User information not found.</p>';
-
-      }
-
-     })
-
-     .catch(error => {
-
-      console.error('Error:', error);
-
-      document.getElementById('result').innerHTML = '<p class="text-red-500">Failed to fetch UID.</p>';
-
-     });
-
-    }
-
-   });
-
-
-
-   function getUserDetails(userId) {
-
-    fetch(`/user-details/${userId}`)
-
-     .then(response => response.json())
-
-     .then(data => {
-
-      if (data.error) {
-
-       console.error('Error:', data.error);
-
-       document.getElementById('userDetails').innerHTML = '<p class="text-red-500">Failed to fetch user details.</p>';
-
-      } else {
-
-       document.getElementById('result').innerHTML = `
-
-        <p>UID: ${data.id}</p>
-
-        <p>Followers: ${data.followers}</p>
-
-        <p>Locale: ${data.locale}</p>
-
-        <p>Created Time: ${data.created_time}</p>
-
-        <p>Name: ${data.name}</p>
-
-       `;
-
-      }
-
-     })
-
-     .catch(error => {
-
-      console.error('Error:', error);
-
-      document.getElementById('result').innerHTML = '<p class="text-red-500">Failed to fetch user details.</p>';
-
-     });
-
-   }
-
-</script>
-
+        function getUserDetails(userId) {
+            fetch(`/user-details/${userId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error('Error:', data.error);
+                        document.getElementById('userDetails').innerHTML = '<p class="text-red-500">Failed to fetch user details.</p>';
+                    } else {
+                        document.getElementById('result').innerHTML = `
+                            <p>UID: ${data.id}</p>
+                            <p>Followers: ${data.followers}</p>
+                            <p>Locale: ${data.locale}</p>
+                            <p>Created Time: ${data.created_time}</p>
+                            <p>Name: ${data.name}</p>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('result').innerHTML = '<p class="text-red-500">Failed to fetch user details.</p>';
+                });
+        }
+    </script>
 </body>
 
 </html>
-
